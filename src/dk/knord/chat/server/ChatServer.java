@@ -1,4 +1,4 @@
-package server;
+package dk.knord.chat.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,8 +6,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import server.gui.IServerConsole;
-import server.gui.ServerConsole;
+import dk.knord.chat.server.gui.IServerConsole;
+import dk.knord.chat.server.gui.ServerConsole;
+
 
 public class ChatServer {
 	private static IServerConsole serverConsole;

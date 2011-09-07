@@ -1,4 +1,4 @@
-package server;
+package dk.knord.chat.server;
 
 public class KNordHeaderFields {
 	

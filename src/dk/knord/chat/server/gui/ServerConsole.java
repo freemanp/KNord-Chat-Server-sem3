@@ -1,4 +1,4 @@
-package server.gui;
+package dk.knord.chat.server.gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
