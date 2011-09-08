@@ -8,7 +8,7 @@ public class KNordHeaderFields {
 		public static final String Message = "MESSAGE";
 		public static final String MessageAll = "MESSAGE ALL";
 		public static final String List = "LIST";
-		public static final String Unknown = "UNKNOWN";
+		public static final String Unkown = "UNKNOWN";
 		public static final String Unsupported = "UNSUPPORTED";
 	}
 	

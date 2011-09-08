@@ -11,6 +11,7 @@ public class ChatHandler extends Thread {
 	private ChatServer server;
 	private BufferedReader input;
 	private PrintWriter output;
+	private boolean running = true;
 	
 	public ChatHandler(Chatter chatter, ChatServer server) throws IOException {
 		if (chatter == null) throw new IllegalArgumentException();
@@ -26,8 +27,7 @@ public class ChatHandler extends Thread {
 	@Override
 	public void run() {
 		try {
-			while (!Thread.interrupted()) {
-				StringTokenizer st;
+			while (running) {
 				
 				if(input.ready()) {
 					String line =  input.readLine();
@@ -39,7 +39,7 @@ public class ChatHandler extends Thread {
 						server.deleteChatter(this);
 					}
 					else if (line.startsWith(KNordHeaderFields.Requests.Message)) {
-						st = new StringTokenizer(line);
+						StringTokenizer st = new StringTokenizer(line);
 						String target = st.nextToken();
 						String msg = input.readLine();
 						server.sendMessage(target, msg);
@@ -71,6 +71,14 @@ public class ChatHandler extends Thread {
 	
 	public void sendResponse(String response) {
 		output.println(response);
+		output.flush();
+	}
+
+	/**
+	 * @param running the running to set
+	 */
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 	
 }
