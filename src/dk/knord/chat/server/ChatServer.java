@@ -39,37 +39,25 @@ public class ChatServer {
 				BufferedReader input = new BufferedReader(
 						new InputStreamReader(socket.getInputStream()));
 				PrintWriter output = new PrintWriter(socket.getOutputStream());
-				startTimer();
 				String username = null;
-
-				// TODO not sure if this while loop is doing what i want, wait
-				// for the timeout or for input to appear.
-				while (!input.ready() || getCurrentTime() < TIMEOUT) {
-					// just wait for input or timeout
-					try {
-						// robots need to rest too...
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-				}
-				// TODO comment the following...
-				if (input.ready()) {
-					StringTokenizer st = new StringTokenizer(input.readLine());
-					if (st.nextToken().equals(Requests.Connect)
-							&& st.hasMoreTokens()) {
+				String message = input.readLine();
+				
+				StringTokenizer st = new StringTokenizer(message);
+				// make sure it is a connect message.
+				if (st.nextToken().equals(Requests.Connect)
+						&& st.hasMoreTokens()) {
+					// second line must be empty
+					if (input.readLine().equals("")) {
 						username = st.nextToken();
+						// create new Chatter and ChatHandler
 						Chatter chatter = createChatter(username, socket);
 						ChatHandler chatHandler = new ChatHandler(chatter, this);
 						chatters.add(chatHandler);
 						chatHandler.setDaemon(true);
+						// start Thread.
 						chatHandler.start();
-						/*
-						 * is the above not better? Thread t = new
-						 * Thread(chatHandler); t.setDaemon(true); t.start();
-						 */
 
+						// print info message
 						print("New Chatter created named: " + chatter.Name);
 					} else {
 						output.println("UNSUPPORTED");
@@ -127,14 +115,6 @@ public class ChatServer {
 		}
 
 		return new Chatter(id, name, socket);
-	}
-
-	private void startTimer() {
-		startTime = System.currentTimeMillis();
-	}
-
-	private long getCurrentTime() {
-		return System.currentTimeMillis() - startTime;
 	}
 
 	protected void deleteChatter(ChatHandler chatter) {
