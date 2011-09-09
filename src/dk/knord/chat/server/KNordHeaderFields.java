@@ -10,6 +10,8 @@ public class KNordHeaderFields {
 		public static final String List = "LIST";
 		public static final String Unkown = "UNKNOWN";
 		public static final String Unsupported = "UNSUPPORTED";
+		
+		public static final String[] commandsList = {"CONNECT", "DISCONNECT", "MESSAGE", "LIST", "UNKNOWN", "UNSUPPORTED"};
 	}
 
 	public static class Responses {
