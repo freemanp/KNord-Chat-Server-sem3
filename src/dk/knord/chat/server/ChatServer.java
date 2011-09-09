@@ -17,8 +17,8 @@ import dk.knord.chat.server.gui.ServerConsole;
 public class ChatServer {
 	private static IServerConsole serverConsole;
 	private List<ChatHandler> chatters;
-	private long startTime;
-	private final long TIMEOUT = 5000;
+//	private long startTime;
+//	private final long TIMEOUT = 5000;
 
 	public ChatServer(IServerConsole serverConsole) {
 		chatters = new ArrayList<ChatHandler>();
@@ -44,8 +44,7 @@ public class ChatServer {
 				
 				StringTokenizer st = new StringTokenizer(message);
 				// make sure it is a connect message.
-				if (st.nextToken().equals(Requests.Connect)
-						&& st.hasMoreTokens()) {
+				if (st.nextToken().equals(Requests.Connect) && st.hasMoreTokens()) {
 					// second line must be empty
 					if (input.readLine().equals("")) {
 						username = st.nextToken();
@@ -54,23 +53,25 @@ public class ChatServer {
 						ChatHandler chatHandler = new ChatHandler(chatter, this);
 						chatters.add(chatHandler);
 						chatHandler.setDaemon(true);
-						// start Thread.
 						chatHandler.start();
 
-						// print info message
 						print("New Chatter created named: " + chatter.Name);
-					} else {
-						output.println("UNSUPPORTED");
+					} 
+					else {
+						output.println(KNordHeaderFields.Responses.Unsupported);
 						output.println();
-						output.println("DISCONNECT");
+						output.println(KNordHeaderFields.Responses.Disconnect);
 						output.println();
+						
 						print("Disconnecting from "
 								+ socket.getInetAddress().getHostAddress()
 								+ " - UNKNOWN");
+						
 						socket.close();
 
 					}
-				} else {
+				} 
+				else {
 					output.println("MESSAGE SERVER");
 					output.println("Connection timed out.");
 					output.println();
@@ -92,10 +93,8 @@ public class ChatServer {
 	}
 
 	private Chatter createChatter(String name, Socket socket) {
-		if (name == null)
-			throw new IllegalArgumentException();
-		if (socket == null)
-			throw new IllegalArgumentException();
+		if (name == null) throw new IllegalArgumentException();
+		if (socket == null) throw new IllegalArgumentException();
 
 		int chatterAmount = chatters.size();
 
