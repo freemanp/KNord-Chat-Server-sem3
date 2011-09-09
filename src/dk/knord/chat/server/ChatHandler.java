@@ -23,36 +23,80 @@ public class ChatHandler extends Thread {
 		input = new BufferedReader(new InputStreamReader(chatter.Socket.getInputStream()));
 		output = new PrintWriter(chatter.Socket.getOutputStream());
 	}
+	
+	/**
+	 * Waits for input from the client and returns a command object. If the command is not recognized, null is returned.
+	 * @return Command object if the command sent is correct, null if unrecognized
+	 * @throws IOException
+	 */
+	private Command readInput() throws Exception{
+		String line = input.readLine();
+		while (line.length() < 4) line = input.readLine();
+		
+		boolean ok = false;
+		for (int i = 0; i < KNordHeaderFields.Requests.commandsList.length; i++) {
+			if (line.startsWith(KNordHeaderFields.Requests.commandsList[i])){
+				ok = true;
+				break;
+			}
+		}
+		
+		if (ok){
+			StringTokenizer st = new StringTokenizer(line);
+			Command c = new Command(st.nextToken());
+			if (st.hasMoreTokens()) c.extra = st.nextToken();
+			
+			if (input.ready()){
+				StringBuilder sb = new StringBuilder();
+				String previousLine = "something";
+				
+				while (input.ready()){
+					line = input.readLine();
+					if (line.equals("") && previousLine.equals("")) break;
+					sb.append(line + "\r\n");
+					previousLine = line;
+				}
+				
+				String content = sb.toString().trim();
+				if (content.length() > 0) c.content = content;
+			}
+			
+			return c;
+		}
+		
+		
+		return null;
+	}
 
 	@Override
 	public void run() {
 		try {
 			while (running) {
 				
-				if(input.ready()) {
-					String line =  input.readLine();
+				Command c = readInput();
+				
+				if(c != null) {
+					System.out.println("Command received: " + c.name);
+					if (c.extra != null) System.out.println(c.extra);
+					if (c.content != null) System.out.println(c.content);
 					
-					if (line.startsWith(KNordHeaderFields.Requests.Connect)) {
+					if (c.name.equals(KNordHeaderFields.Requests.Connect)) {
 						
 					}
-					else if (line.startsWith(KNordHeaderFields.Requests.Disconnect)) {
+					else if (c.name.equals(KNordHeaderFields.Requests.Disconnect)) {
 						server.deleteChatter(this);
 					}
-					else if (line.startsWith(KNordHeaderFields.Requests.Message)) {
-						StringTokenizer st = new StringTokenizer(line);
-						String target = st.nextToken();
-						String msg = input.readLine();
-						server.sendMessage(target, msg);
+					else if (c.name.equals(KNordHeaderFields.Requests.Message)) {
+						//server.sendMessage(target, msg);
 					}
-					else if (line.startsWith(KNordHeaderFields.Requests.MessageAll)) {
+					else if (c.name.equals(KNordHeaderFields.Requests.MessageAll)) {
 						server.broadcastMessage(input.readLine());
 					}
-					else if (line.startsWith(KNordHeaderFields.Requests.List)) {
+					else if (c.name.equals(KNordHeaderFields.Requests.List)) {
 						server.listChatters(this);
 					}
-					else
-						server.Unknown(this);
 				}
+				else server.Unknown(this);
 				
 //				connection.getOutput().println(text);
 //				connection.getOutput().flush();
@@ -60,7 +104,7 @@ public class ChatHandler extends Thread {
 			
 			chatter.Socket.close();
 		}
-		catch (IOException ioe) {
+		catch (Exception ioe) {
 			ioe.printStackTrace(System.err);
 		}
 	}
@@ -82,6 +126,3 @@ public class ChatHandler extends Thread {
 	}
 	
 }
-
-
-
