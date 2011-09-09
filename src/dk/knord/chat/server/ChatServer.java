@@ -72,10 +72,10 @@ public class ChatServer {
 					}
 				} 
 				else {
-					output.println("MESSAGE SERVER");
+					output.println(KNordHeaderFields.Responses.Message + " SERVER");
 					output.println("Connection timed out.");
 					output.println();
-					output.println("DISCONNECT");
+					output.println(KNordHeaderFields.Responses.Disconnect);
 					output.println();
 					print("Disconnecting from "
 							+ socket.getInetAddress().getHostAddress()
@@ -96,17 +96,23 @@ public class ChatServer {
 		if (name == null) throw new IllegalArgumentException();
 		if (socket == null) throw new IllegalArgumentException();
 
+		name = name.trim();
+		
+		if (KNordHeaderFields.KeyWords.isKeyWord(name))
+			name = "_" + name;
+		
 		int chatterAmount = chatters.size();
-
+			
 		int id = chatterAmount - 1 > 0 ? chatters.get(chatterAmount)
 				.getChatter().Id + 1 : 0;
 
 		int sameNames = 0;
 
-		for (int i = 0; i < chatterAmount; i++) {
-			if (chatters.get(i).getChatter().Name.contains(name))
-				sameNames++;
-		}
+		
+			for (int i = 0; i < chatterAmount; i++) {
+				if (chatters.get(i).getChatter().Name.contains(name))
+					sameNames++;
+			}
 
 		if (sameNames > 0) {
 			sameNames++;
@@ -121,6 +127,12 @@ public class ChatServer {
 			if (chatters.get(index).equals(chatter)) {
 				chatter.setRunning(false);
 				chatters.remove(chatter);
+				
+				try {
+					chatter.getChatter().Socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -164,7 +176,7 @@ public class ChatServer {
 		chatHandler.sendResponse(response.toString());
 	}
 
-	protected void Unknown(ChatHandler chatHandler) {
+	protected void unknown(ChatHandler chatHandler) {
 		StringBuilder response = new StringBuilder();
 		response.append(KNordHeaderFields.Responses.Unknown);
 		response.append("\r\n");
