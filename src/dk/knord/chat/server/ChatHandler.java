@@ -96,7 +96,7 @@ public class ChatHandler extends Thread {
 						server.listChatters(this);
 					}
 				}
-				else server.Unknown(this);
+				else server.unknown(this);
 				
 //				connection.getOutput().println(text);
 //				connection.getOutput().flush();
