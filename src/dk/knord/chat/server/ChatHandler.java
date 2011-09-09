@@ -32,6 +32,8 @@ public class ChatHandler extends Thread {
 				if(input.ready()) {
 					String line =  input.readLine();
 					
+					line = line.trim();
+					
 					if (line.startsWith(KNordHeaderFields.Requests.Connect)) {
 						
 					}
@@ -48,7 +50,10 @@ public class ChatHandler extends Thread {
 						server.broadcastMessage(input.readLine());
 					}
 					else if (line.startsWith(KNordHeaderFields.Requests.List)) {
-						server.listChatters(this);
+						if ("".equals(input.readLine()))
+							server.listChatters(this);
+						else
+							server.unknown(this);
 					}
 					else
 						server.unknown(this);
