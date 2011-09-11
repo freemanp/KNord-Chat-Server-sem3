@@ -17,10 +17,9 @@ import dk.knord.chat.server.gui.ServerConsole;
 
 public class ChatServer {
 	private static IServerConsole serverConsole;
-	private List<ChatHandler> chatters;
-
-	// private long startTime;
-	// private final long TIMEOUT = 5000;
+	private static List<ChatHandler> chatters;
+	private static final String WELCOME_MESSAGE = "Chat server written by Andrius Ordojan, Paul Frunza, John Frederiksen"
+			+ "\nServer listening on port 4711";
 
 	public ChatServer(IServerConsole serverConsole) {
 		chatters = new ArrayList<ChatHandler>();
@@ -29,8 +28,7 @@ public class ChatServer {
 		try {
 			ServerSocket listener = new ServerSocket(4711);
 
-			print("Chat server written by Andrius Ordojan, Paul Frunza, John Frederiksen");
-			print("Server listening on port 4711");
+			print(WELCOME_MESSAGE);
 
 			while (true) {
 				Socket socket = listener.accept();
@@ -57,7 +55,8 @@ public class ChatServer {
 						chatters.add(chatHandler);
 						chatHandler.setDaemon(true);
 						chatHandler.start();
-						print("New Chatter created named: " + chatter.Name);
+						print("New Chatter created named: " + chatter.Name
+								+ " with id: " + chatter.Id);
 						sendListToAll();
 					} else {
 						output.println(KNordHeaderFields.Responses.Unsupported);
@@ -75,7 +74,14 @@ public class ChatServer {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace(System.err);
+			print(e.getMessage());
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			serverConsole.getJFrame().dispose();
+
 		}
 	}
 
@@ -96,8 +102,8 @@ public class ChatServer {
 
 		int chatterAmount = chatters.size() - 1;
 
-		int id = chatterAmount > 0 ? chatters.get(chatterAmount)
-				.getChatter().Id + 1 : 0;
+		int id = chatterAmount > 0 ? chatters.get(chatterAmount).getChatter().Id + 1
+				: 0;
 
 		int sameNames = 0;
 
@@ -134,7 +140,7 @@ public class ChatServer {
 
 	protected void sendMessage(String target, String text, ChatHandler source) {
 		// TODO This shits broken yo. the protocol I mean MESSAGE source
-		boolean noSuchAlias = true;		
+		boolean noSuchAlias = true;
 		for (int i = 0; i < chatters.size(); i++) {
 			if (chatters.get(i).getChatter().Name.equals(target)) {
 				String message = Responses.Message + " "
@@ -187,6 +193,15 @@ public class ChatServer {
 	protected void sendListToAll() {
 		for (int index = 0; index < chatters.size(); index++) {
 			listChatters(chatters.get(index));
+		}
+	}
+
+	public static void disconnect() {
+		String message = Requests.Disconnect + "\n";
+		for (int i = 0; i < chatters.size(); i++) {
+			chatters.get(i).sendResponse(message);
+			chatters.get(i).setRunning(false);
+			chatters.get(i).interrupt();
 		}
 	}
 

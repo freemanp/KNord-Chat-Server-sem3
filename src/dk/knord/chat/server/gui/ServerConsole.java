@@ -3,15 +3,18 @@ package dk.knord.chat.server.gui;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
+
+import dk.knord.chat.server.ChatServer;
 
 public class ServerConsole implements IServerConsole {
-
+	
 	private JFrame frmChatServer;
 	private JTextArea textArea;
 
@@ -25,6 +28,13 @@ public class ServerConsole implements IServerConsole {
 		frmChatServer.setTitle("Chat Server Console");
 		frmChatServer.setBounds(100, 100, 450, 300);
 		frmChatServer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmChatServer.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				ChatServer.disconnect();
+
+				frmChatServer.dispose();
+			}
+		});
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0 };
@@ -45,13 +55,12 @@ public class ServerConsole implements IServerConsole {
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
 		scrollPane.setViewportView(textArea);
-		scrollPane.getVerticalScrollBar().addAdjustmentListener(
-				new AdjustmentListener() {
-					public void adjustmentValueChanged(AdjustmentEvent e) {
-						e.getAdjustable().setValue(
-								e.getAdjustable().getMaximum());
-					}
-				});
+		// auto scroll
+		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		// word wrapping
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
 	}
 
 	@Override
@@ -62,4 +71,10 @@ public class ServerConsole implements IServerConsole {
 	protected JTextArea getTextArea() {
 		return textArea;
 	}
+
+	@Override
+	public JFrame getJFrame() {
+		return frmChatServer;
+	}
+	
 }
