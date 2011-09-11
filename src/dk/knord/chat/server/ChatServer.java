@@ -134,13 +134,17 @@ public class ChatServer {
 
 	protected void sendMessage(String target, String text, ChatHandler source) {
 		// TODO This shits broken yo. the protocol I mean MESSAGE source
+		boolean noSuchAlias = true;		
 		for (int i = 0; i < chatters.size(); i++) {
 			if (chatters.get(i).getChatter().Name.equals(target)) {
 				String message = Responses.Message + " "
 						+ source.getChatter().Name + "\n" + text + "\n";
 				chatters.get(i).sendResponse(message);
+				noSuchAlias = false;
 			}
 		}
+		if (noSuchAlias)
+			source.sendResponse(Responses.NoSuchAlias);
 	}
 
 	protected void broadcastMessage(String msg, String source) {
