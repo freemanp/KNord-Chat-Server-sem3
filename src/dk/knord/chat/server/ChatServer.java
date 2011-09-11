@@ -126,7 +126,7 @@ public class ChatServer {
 				chatters.remove(chatter);
 
 				try {
-					chatter.getChatter().Socket.close();
+					chatter.close();
 					print("Closed connection to " + chatter.getChatter().Name
 							+ ".");
 				} catch (IOException e) {
