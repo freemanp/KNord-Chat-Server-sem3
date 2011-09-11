@@ -80,14 +80,11 @@ public class ChatHandler extends Thread {
 					if (c.extra != null) System.out.println(c.extra);
 					if (c.content != null) System.out.println(c.content);
 					
-					if (c.name.equals(KNordHeaderFields.Requests.Connect)) {
-						
-					}
-					else if (c.name.equals(KNordHeaderFields.Requests.Disconnect)) {
+					if (c.name.equals(KNordHeaderFields.Requests.Disconnect)) {
 						server.deleteChatter(this);
 					}
 					else if (c.name.equals(KNordHeaderFields.Requests.Message)) {
-						//server.sendMessage(target, msg);
+						if (c.extra != null && c.content != null) server.sendMessage(c.extra, c.content);
 					}
 					else if (c.name.equals(KNordHeaderFields.Requests.MessageAll)) {
 						server.broadcastMessage(input.readLine());
@@ -96,7 +93,7 @@ public class ChatHandler extends Thread {
 						server.listChatters(this);
 					}
 				}
-				else server.Unknown(this);
+				else server.unknown(this);
 				
 //				connection.getOutput().println(text);
 //				connection.getOutput().flush();

@@ -137,7 +137,7 @@ public class ChatServer {
 		}
 	}
 
-	protected void sendMessage(String target, String text) {
+	protected void sendMessage(String source, String target, String text) {
 		// TODO This shits broken yo. the protocol I mean MESSAGE source
 		for (int i = 0; i < chatters.size(); i++) {
 			if (chatters.get(i).getChatter().Name.equals(target)) {
