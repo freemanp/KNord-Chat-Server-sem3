@@ -133,6 +133,7 @@ public class ChatServer {
 					e.printStackTrace();
 				}
 				sendListToAll();
+				break;
 			}
 		}
 	}

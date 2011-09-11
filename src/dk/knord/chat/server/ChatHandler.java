@@ -122,6 +122,7 @@ public class ChatHandler extends Thread {
 			chatter.Socket.close();
 		} catch (Exception ioe) {
 			ioe.printStackTrace(System.err);
+			server.deleteChatter(this);
 		}
 	}
 
