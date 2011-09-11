@@ -143,4 +143,10 @@ public class ChatHandler extends Thread {
 		this.running = running;
 	}
 
+	public void close() throws IOException {
+		output.close();
+		input.close();
+		chatter.Socket.close();
+	}
+
 }
